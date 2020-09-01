@@ -13,12 +13,13 @@ def main():
 	api = create_api()
 
 	week = 1
+	comp_table = 5
 
 	HOH_tweeted = RmTw_tweeted = IniNoms_tweeted = Veto_tweeted = FinNoms_tweeted = Evt_tweeted = False
 
-	HOH_col_pos, RmTw_col_pos, IniNoms_col_pos_1, IniNoms_col_pos_2 = 1, 3, 5, 7
-	Veto_col_pos, VtUs_col_pos, FinNoms_col_pos_1, FinNoms_col_pos_2 = 9, 11, 13, 15
-	Evt_col_pos, Vote_col_pos = 17, 18
+	HOH_col_pos, RmTw_col_pos, IniNoms_col_pos_1, IniNoms_col_pos_2 = 1, 3, 4, 6 #1, 3, 5, 7
+	Veto_col_pos, VtUs_col_pos, FinNoms_col_pos_1, FinNoms_col_pos_2 = 8, 10, 12, 14 #7, 11, 13, 15
+	Evt_col_pos, Vote_col_pos = 16, 17 #17, 18
 	#This is a little complicated because some of the column numbers change 
 	#depending on if the veto ceremony has already happened.  This is because 
 	#after the veto, a picture is added to the table shifting the column positions.
@@ -29,13 +30,14 @@ def main():
 	#Find the current week.
 	page = requests.get('https://bigbrother.fandom.com/wiki/Big_Brother_22_(US)')
 	tree = html.fromstring(page.content)
-	names = tree.xpath('//table[4]/tr[' + str(week+2) + ']/td/text()')
+	names = tree.xpath('//table[' + str(comp_table) + ']/tr[' + str(week+2) + ']/td/text()')
+
 	while(names[HOH_col_pos].split('\n')[0] != 'TBD'):
 		week += 1
-		names = tree.xpath('//table[4]/tr[' + str(week+2) + ']/td/text()')
+		names = tree.xpath('//table[' + str(comp_table) + ']/tr[' + str(week+2) + ']/td/text()')
 	week -= 1
 	logger.info('It is week ' + str(week))
-	names = tree.xpath('//table[4]/tr[' + str(week+2) + ']/td/text()')
+	names = tree.xpath('//table[' + str(comp_table) + ']/tr[' + str(week+2) + ']/td/text()')
 
 	#Find what part of the week
 	if(names[HOH_col_pos].split('\n')[0] != 'TBD'):
@@ -59,9 +61,7 @@ def main():
 	while(week<14):
 		page = requests.get('https://bigbrother.fandom.com/wiki/Big_Brother_22_(US)')
 		tree = html.fromstring(page.content)
-		names = tree.xpath('//table[4]/tr[' + str(week+2) + ']/td/text()')
-		#print(names)
-
+		names = tree.xpath('//table[' + str(comp_table) + ']/tr[' + str(week+2) + ']/td/text()')
 		HOH = names[HOH_col_pos].split('\n')[0]
 		if((HOH != 'TBD') and HOH_tweeted == False):
 			Tweet = HOH + ' has won the HOH competition' + hashtags
